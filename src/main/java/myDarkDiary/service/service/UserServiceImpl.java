@@ -29,8 +29,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import myDarkDiary.service.exceptions.EmailExistsException;
+import myDarkDiary.service.exceptions.UserNotFoundException;
 import myDarkDiary.service.model.VerificationToken;
 import myDarkDiary.service.repository.VerificationTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +67,11 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmail(email);
     }
     
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id);
+    }
+    
    
     @Override
     public boolean emailExist(String email) {
@@ -88,6 +95,7 @@ public class UserServiceImpl implements UserService{
         accountDto.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
         accountDto.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
         accountDto.setEnabled(false);
+        accountDto.setBanned(false);
         return userRepository.save(accountDto);
     }
     
@@ -112,5 +120,26 @@ public class UserServiceImpl implements UserService{
     public User getUser(String verificationToken) {
         User user = tokenRepository.findByToken(verificationToken).getUser();
         return user;
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<User> users=userRepository.findAll();
+        for(User user:users)
+        {
+            user.setPassword(user.getPassword());
+        }
+        return users;
+    }
+
+    @Override
+    public User deleteUser(Long id) {
+        User deletedUser = userRepository.findById(id);
+         
+        if (deletedUser == null)
+            throw new UserNotFoundException("this user does not exist");
+         
+        userRepository.delete(deletedUser);
+        return deletedUser;
     }
 }

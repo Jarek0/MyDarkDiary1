@@ -1,0 +1,154 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2016-09-09, 17:55:17
+    Author     : Dell
+*/
+
+    .accept{
+    display: none !important;
+    }
+  
+  
+.accept:checked + label img{
+    opacity: 1;
+    }
+.radio_item:checked + label img{
+    opacity: 1;
+   
+    }
+.radio_item{
+    display: none !important;
+    }
+.label_item img{
+        opacity: 0.5;
+    width:6%;
+    padding-top:0.5%;
+    padding-right: 0.5%;
+    }
+
+label {
+cursor: pointer;   
+}
+
+.button
+{
+    
+    overflow:hidden;
+    background-color:black;
+    width:15%;
+    color:white;
+    font-family:font2;
+    font-size:100%;
+    border:none;
+    border-bottom-style:double;
+    border-bottom-width:1px;
+    border-top-style:double;
+    border-top-width:1px;
+    margin-right:2%;
+    margin-top:2%;
+}
+input[type="button"]
+{
+    
+    overflow:hidden;
+    background-color:black;
+    width:15%;
+    color:white;
+    font-family:font2;
+    font-size:100%;
+    border:none;
+    border-bottom-style:double;
+    border-bottom-width:1px;
+    border-top-style:double;
+    border-top-width:1px;
+    margin-right:2%;
+    margin-top:2%;
+}
+
+.czerwone{
+    color:red;
+}
+th{
+    background-color:black;
+    color:white;
+}
+.usersTable table, thead, tbody, th, td, tr{
+    text-align:center; 
+    vertical-align:middle;
+}
+.usersTable th,td{
+    width:12%;
+}
+.usersTable .options{
+    width:36%;
+}
+.button1{
+    background-color:black;
+    color:white;
+    font-family:font2;
+    font-size:80%;
+    border:none;
+    border-bottom-style:double;
+    border-bottom-width:1px;
+    border-top-style:double;
+    border-top-width:1px;
+    margin-right:2%;
+    margin-top:2%;
+    width: 30%;
+}
+.usersTable .label_item img{
+        opacity: 0.5;
+    width:20%;
+    padding-top:0.5%;
+    padding-right: 0.5%;
+    }
+@media (max-width: 800px) {
+.usersTable table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	.usersTable thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	.usersTable tbody, th,td{
+    width:100%;
+}
+	.usersTable tr { border: 1px solid #ccc; }
+	
+	.usersTable td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+	}
+	
+	.usersTable td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	
+	
+        
+	.usersTable td:nth-of-type(1):before { content: "Username"; }
+	.usersTable td:nth-of-type(2):before { content: "E-mail"; }
+	.usersTable td:nth-of-type(3):before { content: "Role"; }
+	.usersTable td:nth-of-type(4):before { content: "Verificated"; }
+	.usersTable td:nth-of-type(5):before { content: "Online"; }
+	.usersTable td:nth-of-type(6):before { content: "Options"; }
+
+        }

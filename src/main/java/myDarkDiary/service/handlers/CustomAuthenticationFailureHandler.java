@@ -54,6 +54,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             errorMessage = messages.getMessage("message.badCredentials", null, locale);
         }else if (exception.getMessage().equalsIgnoreCase("no user found with username")) {
             errorMessage = messages.getMessage("message.noUser", null, locale);
+        }else if (exception.getMessage().equalsIgnoreCase("banned")) {
+            errorMessage = messages.getMessage("message.userBanned", null, locale);
         }
  
         request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, errorMessage);

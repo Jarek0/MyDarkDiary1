@@ -71,7 +71,10 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
+        boolean accountNonLocked = !user.getBanned();
+        if (!accountNonLocked) {
+            throw new RuntimeException("banned");
+        }
         
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),enabled, accountNonExpired, 
           credentialsNonExpired, accountNonLocked, grantedAuthorities);

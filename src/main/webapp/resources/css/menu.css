@@ -1,0 +1,112 @@
+@font-face
+{
+  font-family: font2;
+  src: url(../fonts/font6.ttf) format("truetype");
+  
+}
+nav{
+    margin-top: 10%;
+}
+ul.egmenu{ 
+    
+    margin:0;
+    padding:0;
+}
+
+ul.egmenu > li { 
+    
+    width:25%;
+    float: left; 
+    position: relative;  
+    padding:0;
+    list-style: none; 
+}
+ul.egmenu li { 
+    list-style: none; 
+}
+
+ul.egmenu ul {
+    width:100%;
+    position: absolute;
+    z-index:3;
+    list-style-position:inside;
+    margin:0;
+    padding:0;  
+    display:none;
+}
+
+ul.egmenu ul a{
+    margin-top:2%;
+       
+}
+
+ul.egmenu a { 
+    padding-top:2%;
+    padding-bottom:2%;
+    cursor: pointer; 
+    display: block; 
+    color: black; 
+    line-height: 30px;
+    text-decoration: none;
+    border-bottom-style:double;
+    border-bottom-width:3px;
+    border-top-style:double;
+    border-top-width:3px;
+    font-family:font2;
+    font-size:150%;
+    text-align: center;
+    vertical-align:middle;
+    background-color: white;
+}
+
+
+
+ul.egmenu a:hover{
+    color: white; 
+    border-color:black;
+    background-color: black;
+}
+
+ul.egmenu a.position{
+    color: white; 
+    border-color:black;
+    background-color: black;
+}
+
+
+.menu-trigger{
+    padding-top:2%;
+    padding-bottom:2%;
+    cursor: pointer;  
+    color: white; 
+    line-height: 30px;
+    text-decoration: none;
+    border-bottom-style:double;
+    border-bottom-width:3px;
+    border-top-style:double;
+    border-top-width:3px;
+    border-color:black;
+    font-family:font2;
+    font-size:150%;
+    text-align: center;
+    vertical-align:middle;
+    background-color: black;
+}
+
+@media (min-width: 800px) {
+
+.menu-trigger {display:none;}
+nav{display:block !important;}
+}
+
+@media (max-width: 800px) {
+
+.menu-trigger {display:block; margin-top:5%;}
+nav{display:none; margin-top:1%;}
+ul.egmenu {  height: auto; }
+ul.egmenu > li {  float: none; width: 100%;}
+ul.egmenu  ul {  float: none; width: 100%; position: relative;}
+ul.egmenu > li a { line-height: 40px; padding: 0;}
+ul.egmenu ul a{  float: none; width: 80%; margin: 0 auto; padding: 0; font-size:100%;}
+
+}

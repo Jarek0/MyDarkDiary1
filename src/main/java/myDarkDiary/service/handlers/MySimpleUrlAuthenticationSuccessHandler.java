@@ -21,7 +21,9 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import myDarkDiary.service.service.UserService;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -38,9 +40,14 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
  
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
  
+    //@Autowired
+    //private UserService userService;
+    
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, 
       HttpServletResponse response, Authentication authentication) throws IOException {
+        
+     //   (userService.findByUsername(authentication.getName())).setOnline(true);
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);
     }

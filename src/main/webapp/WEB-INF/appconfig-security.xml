@@ -1,10 +1,14 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
              xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+             xmlns:p="http://www.springframework.org/schema/p"
              xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/security
-		http://www.springframework.org/schema/security/spring-security.xsd">
+		http://www.springframework.org/schema/security/spring-security.xsd
+                http://www.springframework.org/schema/jdbc 
+                http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
 
 	
         <beans:bean id="myAuthenticationSuccessHandler"
@@ -14,13 +18,20 @@
         <beans:bean id="myAuthenticationFailureHandler"
         class="myDarkDiary.service.handlers.CustomAuthenticationFailureHandler" />
         
-	<http auto-config="true" use-expressions="true">
-
+	<http auto-config="true" use-expressions="true"> <!--entry-point-ref="authenticationEntryPoint"-->
+            <!--
+             <custom-filter ref="authenticationFilter" position="FORM_LOGIN_FILTER"/>
+             <custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER"/>
+             <session-management session-authentication-strategy-ref="sas"/>-->
+  
 		<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+                <intercept-url pattern="/admin/console/**" access="hasRole('ROLE_ADMIN')" />
                 <intercept-url pattern="/" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
                 <intercept-url pattern="/welcome" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
 		<!-- redirect to 403 access denied <intercept-url pattern="/update**" access="hasRole('ROLE_ADMIN') 
 			and isFullyAuthenticated()" /> -->
+                        
+                
                 <access-denied-handler error-page="/403" />
 		<form-login login-page="/login" 
 		    default-target-url="/welcome"
@@ -31,17 +42,43 @@
 			authentication-success-handler-ref="myAuthenticationSuccessHandler" 
                 authentication-failure-handler-ref="myAuthenticationFailureHandler"/>
 
-		<logout logout-success-url="/" logout-url="/j_spring_security_logout" delete-cookies="JSESSIONID" />
+            <session-management>
+        <concurrency-control max-sessions="1" session-registry-alias="sessionRegistry"/>
+    </session-management>
+                
+		<logout logout-url="/j_spring_security_logout" delete-cookies="JSESSIONID" success-handler-ref="logoutSuccessHandler" />
 		<!-- enable csrf protection -->
 		<csrf />
 
-		<remember-me 
-		    key="uniqueAndSecret" token-validity-seconds="86400"
-			remember-me-parameter="remember-me" 
-			data-source-ref="dataSource" />
-
-	</http>
-
+		 <remember-me data-source-ref="dataSource" token-validity-seconds="86400"/>
+       </http>
+<!--
+       <beans:bean id="authenticationEntryPoint"  class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+	<beans:constructor-arg value="/login"/>
+</beans:bean>
+       
+       <beans:bean id="authenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter"
+     p:sessionAuthenticationStrategy-ref="sas"
+     p:authenticationManager-ref="authenticationManager"
+     p:authenticationFailureHandler-ref="myAuthenticationFailureHandler"
+     p:authenticationSuccessHandler-ref="myAuthenticationSuccessHandler"/>
+       
+ 
+ <beans:bean id="sas" class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy">
+	<beans:constructor-arg>
+		<beans:list>
+			<beans:bean class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy">
+				<beans:constructor-arg ref="sessionRegistry"/>
+                                <beans:property name="maximumSessions" value="1" />
+		                <beans:property name="exceptionIfMaximumExceeded" value="true" />
+			</beans:bean>
+			<beans:bean class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy"/>
+			<beans:bean class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+				<beans:constructor-arg ref="sessionRegistry"/>
+			</beans:bean>
+		</beans:list>
+	</beans:constructor-arg>
+</beans:bean>-->
 	<!-- Select users and user_roles from database -->
 	<authentication-manager alias="authenticationManager">
         <authentication-provider user-service-ref="userDetailsService">
@@ -49,11 +86,38 @@
         </authentication-provider>
     </authentication-manager>
     
+    <beans:bean id="rememberMeAuthenticationProvider" 
+                class="org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices">
+    <beans:constructor-arg value="myAppKey" />
+    <beans:constructor-arg ref="jdbcTokenRepository" />
+    <beans:constructor-arg ref="userDetailsService" />
+</beans:bean>
+  
+<!-- Uses a database table to maintain a set of persistent login data -->
+<beans:bean id="jdbcTokenRepository"
+  class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl"> 
+    <beans:property name="createTableOnStartup" value="false" /> 
+    <beans:property name="dataSource" ref="dataSource" /> 
+</beans:bean>
+    
     <beans:bean id="userDetailsService" class="myDarkDiary.service.service.UserDetailsServiceImpl"></beans:bean>
 
     <beans:bean id="encoder"
           class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
         <beans:constructor-arg name="strength" value="11"/>
     </beans:bean>
+    
+    <beans:bean id="concurrencyFilter"
+class="org.springframework.security.web.session.ConcurrentSessionFilter">
+<beans:constructor-arg name="expiredUrl" value="/session-expired.htm" />
+<beans:constructor-arg ref="sessionRegistry"/>
 
+</beans:bean>
+ <!--
+<beans:bean id="sessionRegistry"
+    class="org.springframework.security.core.session.SessionRegistryImpl" />
+-->
+<beans:bean id="logoutSuccessHandler" class="myDarkDiary.service.handlers.LogoutSuccessHandler" >
+    <beans:constructor-arg value="/" />
+</beans:bean>
 </beans:beans>

@@ -20,8 +20,11 @@ package myDarkDiary.service.web;
  * @author Dell
  */
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
+import javax.annotation.Resource;
 import myDarkDiary.service.validator.UserValidator;
 import myDarkDiary.service.service.SecurityServiceImpl;
 import myDarkDiary.service.service.UserServiceImpl;
@@ -32,35 +35,40 @@ import myDarkDiary.service.exceptions.EmailExistsException;
 import myDarkDiary.service.GenericResponse;
 import myDarkDiary.service.model.VerificationToken;
 import myDarkDiary.service.events.OnRegistrationCompleteEvent;
+import myDarkDiary.service.exceptions.UserNotFoundException;
 import myDarkDiary.service.service.MailServiceImpl;
 import myDarkDiary.service.service.SecurityServiceImpl;
 import myDarkDiary.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
 public class LoginController {
+    @Autowired
+    private SessionRegistry sessionRegistry;
+    
     @Autowired
     private UserService userService;
 
@@ -78,6 +86,8 @@ public class LoginController {
     
     @Autowired
     private MailServiceImpl mailService;
+    
+    
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(Model model) {
@@ -147,7 +157,7 @@ public String confirmRegistration
         return "hello";
     }
 
-	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin", method = RequestMethod.GET)
 	public String adminPage(Model model) {
 
 		
@@ -157,6 +167,97 @@ public String confirmRegistration
 		return "admin";
 
 	}
+        
+        @RequestMapping(value = "/admin/console", method = RequestMethod.GET)
+	public String adminConsole(Model model) {
+//userService.findAll()
+                List<User> usersList=getUserList();
+		model.addAttribute("usersList",usersList);
+		return "console";
+
+	}
+        
+        @RequestMapping(value = "/admin/console/delete/{userId}", method = RequestMethod.GET)
+        public String delateUser(@PathVariable(value="userId") Long id,Model model)
+        {
+            try{
+            User deletedUser=userService.deleteUser(id);
+            model.addAttribute("message", "User with name "+deletedUser.getUsername()+" is deleted");
+            List<User> usersList=getUserList();
+		model.addAttribute("usersList",usersList);
+            return "console";
+            }
+            catch(UserNotFoundException e)
+            {
+            model.addAttribute("message", e.getMessage());
+            List<User> usersList=getUserList();
+		model.addAttribute("usersList",usersList);
+            return "console";
+            }
+        }
+        
+        @RequestMapping(value = "/admin/console/ban/{userId}", method = RequestMethod.GET)
+        public String banUser(@PathVariable(value="userId") Long id,Model model)
+        {
+            
+            User bannedUser=userService.findById(id);
+            bannedUser.setBanned(true);
+            userService.saveRegisteredUser(bannedUser);
+            if(bannedUser.getOnline())
+            {
+                org.springframework.security.core.userdetails.User bannedUserWithSession=findUserByUsername(bannedUser.getUsername());
+                if(bannedUserWithSession!=null)
+                {
+                    for(SessionInformation session:(sessionRegistry.getAllSessions(bannedUserWithSession, true))){
+                        session.expireNow();
+                    }
+                }
+            }
+            
+            model.addAttribute("message", "User with name "+bannedUser.getUsername()+" is banned");
+            List<User> usersList=getUserList();
+		model.addAttribute("usersList",usersList);
+            return "console";
+            
+        }
+        
+        public org.springframework.security.core.userdetails.User findUserByUsername(String userName)
+        {
+            List<Object> onlineUserList=sessionRegistry.getAllPrincipals();
+            for(Object onlineUser:onlineUserList)
+            {
+                org.springframework.security.core.userdetails.User convertedonlineUser=(org.springframework.security.core.userdetails.User)onlineUser;
+                if(((convertedonlineUser).getUsername()).equalsIgnoreCase(userName))
+                {
+                   return convertedonlineUser; 
+                }
+                
+            }
+            return null;
+        }
+        
+        public List<User> getUserList(){
+            List<User> usersList=userService.findAll();
+        List<Object> onlineUserList=sessionRegistry.getAllPrincipals();
+        for(User user:usersList)
+        {
+            for(Object onlineUser:onlineUserList)
+            {
+                if(user.getUsername().equalsIgnoreCase(((org.springframework.security.core.userdetails.User)onlineUser).getUsername()))
+                {
+                    user.setOnline(true);
+                    userService.saveRegisteredUser(user);
+                    break;
+                }
+                else
+                {
+                    user.setOnline(false);
+                    userService.saveRegisteredUser(user);
+                }
+            }
+        }
+        return usersList;
+        }
 
 	/**
 	 * This update page is for user login with password only.

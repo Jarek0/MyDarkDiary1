@@ -1,0 +1,218 @@
+@font-face
+{
+  font-family: gotic;
+  src:  url(../fonts/gotic.ttf) format("truetype");
+}
+@font-face
+{
+  font-family: akapitowka;
+  src:  url(../fonts/akapitowka.ttf) format("truetype");
+}
+
+@font-face
+{
+  font-family: font2;
+  src: url(../fonts/font6.TTF) format("truetype");
+  
+}
+fieldset{
+    
+    border: 20px solid transparent;
+    -webkit-border-image: url(../images/border.png) 40 round; /* Safari 3.1-5 */
+    -o-border-image: url(../images/border.png) 40 round; /* Opera 11-12.1 */
+    border-image: url(../images/border.png) 40 round;
+}
+
+body{
+    background-image: url(../images/background.jpg);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-size:cover;
+    background-position: center;
+    margin: 0 auto;
+}
+#con{
+    width:30%;
+    margin: 0 auto;
+    font-family: Times New Roman;
+    font-size:85%;
+}
+div.login-box{
+    box-shadow:3px 3px 6px black;
+    background-color: white;
+    
+    clear:both;
+}
+
+div.login-box p{
+    
+    margin:0 auto;
+    margin:1%;
+    
+}
+/*div.login-box p:first-letter
+{
+    font-family:akapitowka;
+    font-size:400%;
+    float:left;
+}*/
+#nav{
+    
+    float:left;
+    margin-bottom:1%;
+    margin-top: 20%;
+    width: 100%; 
+}
+ul.egmenu{ 
+    
+    margin:0;
+    padding:0;
+}
+
+ul.egmenu > li { 
+    
+    width:50%;
+    float: left; 
+    position: relative;  
+    padding:0;
+    list-style: none; 
+}
+ul.egmenu li { 
+    list-style: none; 
+}
+
+ul.egmenu ul {
+    width:100%;
+    position: absolute;
+    z-index:3;
+    list-style-position:inside;
+    margin:0;
+    padding:0;  
+    display:none;
+}
+
+ul.egmenu ul a{
+    margin-top:2%;
+       
+}
+
+ul.egmenu a { 
+    padding-top:2%;
+    padding-bottom:2%;
+    cursor: pointer; 
+    display: block; 
+    color: black; 
+    line-height: 30px;
+    text-decoration: none;
+    border-bottom-style:double;
+    border-bottom-width:3px;
+    border-top-style:double;
+    border-top-width:3px;
+    font-family:font2;
+    font-size:150%;
+    text-align: center;
+    vertical-align:middle;
+    background-color: white;
+}
+ul.egmenu a.b{
+    color: white; 
+    border-color:black;
+    background-color: black;
+}
+
+
+
+
+input[type="text"],input[type="password"]
+{
+    width:100%;
+    padding:3%;
+    
+    margin-bottom:2%;
+}
+.button
+{
+    width:100%;
+    color:white;
+    background-color:black;
+    padding:3%;
+    
+    font-family:font2;
+    font-size:100%;
+    border:none;
+    border-bottom-style:double;
+    border-bottom-width:1px;
+    border-top-style:double;
+    border-top-width:1px;
+    
+    margin-top:2%;
+}
+table{
+    margin-right:2%;
+    margin-top:2%;
+    width:96%;
+}
+.accept{
+    display: none !important;
+    }
+  
+  
+.accept:checked + label img{
+    opacity: 1;
+    }
+.radio_item:checked + label img{
+    opacity: 1;
+   
+    }
+.radio_item{
+    display: none !important;
+    }
+.label_item img{
+        opacity: 0.5;
+    width:6%;
+    padding-top:0.5%;
+    padding-right: 0.5%;
+    }
+ 
+@media all and (max-width: 1000px) {
+
+   #con{
+    width:35%;
+    
+    font-size:80%;
+}
+.label_item img{
+    
+    width:7%;
+    
+    }
+    
+} 
+@media all and (max-width: 800px) {
+
+   #con{
+    width:45%;
+    
+    font-size:80%;
+}
+.label_item img{
+    
+    width:8%;
+    
+    }
+    
+}
+
+@media all and (max-width: 500px) {
+#con{
+    width:60%;
+    
+    font-size:75%;
+}
+  .label_item img{
+    
+    width:10%;
+    
+    } 
+
+}   

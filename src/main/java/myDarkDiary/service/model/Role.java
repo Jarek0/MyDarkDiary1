@@ -29,7 +29,8 @@ public class Role {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "roles")
+    
     public Set<User> getUsers() {
         return users;
     }

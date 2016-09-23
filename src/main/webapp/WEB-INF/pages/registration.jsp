@@ -8,7 +8,7 @@
 <html>
 <head>
 <title>Registration Page</title>
-<link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/css/loginAndRegistration.css" />" rel="stylesheet">
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 
 <meta charset="utf-8">
