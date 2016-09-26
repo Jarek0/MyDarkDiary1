@@ -21,7 +21,9 @@ package myDarkDiary.service.web;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Resource;
@@ -30,9 +32,11 @@ import myDarkDiary.service.service.SecurityServiceImpl;
 import myDarkDiary.service.service.UserServiceImpl;
 import myDarkDiary.service.model.User;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import myDarkDiary.service.exceptions.EmailExistsException;
 import myDarkDiary.service.GenericResponse;
+import myDarkDiary.service.events.BanUserEvent;
 import myDarkDiary.service.model.VerificationToken;
 import myDarkDiary.service.events.OnRegistrationCompleteEvent;
 import myDarkDiary.service.exceptions.UserNotFoundException;
@@ -121,8 +125,7 @@ public class LoginController {
     }
     
     @RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)
-public String confirmRegistration
-      (WebRequest request, Model model, @RequestParam("token") String token) {
+public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
     Locale locale = request.getLocale();
      
     VerificationToken verificationToken = userService.getVerificationToken(token);
@@ -169,78 +172,118 @@ public String confirmRegistration
 	}
         
         @RequestMapping(value = "/admin/console", method = RequestMethod.GET)
-	public String adminConsole(Model model) {
+	public String adminConsole(Model model, Authentication authentication) {
 //userService.findAll()
-                List<User> usersList=getUserList();
+                List<User> usersList=getUserList(authentication.getName());
 		model.addAttribute("usersList",usersList);
 		return "console";
 
 	}
         
         @RequestMapping(value = "/admin/console/delete/{userId}", method = RequestMethod.GET)
-        public String delateUser(@PathVariable(value="userId") Long id,Model model)
+        public String delateUser(@PathVariable(value="userId") Long id,Model model, Authentication authentication)
         {
             try{
             User deletedUser=userService.deleteUser(id);
+            if(deletedUser.getUsername().equalsIgnoreCase(authentication.getName()))
+            {
+                model.addAttribute("message", "You can not delete yourself");
+                List<User> usersList=getUserList(authentication.getName());
+		model.addAttribute("usersList",usersList);
+                return "console";
+            }
+            else if(!userService.IsAdmin(deletedUser))
+            {
+                model.addAttribute("message", "You can not delete admin");
+                List<User> usersList=getUserList(authentication.getName());
+		model.addAttribute("usersList",usersList);
+                return "console";
+            }
+            else
+            {
             model.addAttribute("message", "User with name "+deletedUser.getUsername()+" is deleted");
-            List<User> usersList=getUserList();
+            List<User> usersList=getUserList(authentication.getName());
 		model.addAttribute("usersList",usersList);
             return "console";
+            }
+            
             }
             catch(UserNotFoundException e)
             {
             model.addAttribute("message", e.getMessage());
-            List<User> usersList=getUserList();
+            List<User> usersList=getUserList(authentication.getName());
 		model.addAttribute("usersList",usersList);
             return "console";
             }
         }
         
         @RequestMapping(value = "/admin/console/ban/{userId}", method = RequestMethod.GET)
-        public String banUser(@PathVariable(value="userId") Long id,Model model)
+        public String banUser(@PathVariable(value="userId") Long id,Model model,WebRequest request, Authentication authentication)
         {
             
             User bannedUser=userService.findById(id);
+            if(bannedUser.getUsername().equalsIgnoreCase(authentication.getName()))
+            {
+                model.addAttribute("message", "You can not delete yourself");
+                List<User> usersList=getUserList(authentication.getName());
+		model.addAttribute("usersList",usersList);
+                return "console";
+            }
+            else if(!userService.IsAdmin(bannedUser))
+            {
+                model.addAttribute("message", "You can not ban admin");
+                List<User> usersList=getUserList(authentication.getName());
+		model.addAttribute("usersList",usersList);
+                return "console";
+            }
+            else
+            {
             bannedUser.setBanned(true);
             userService.saveRegisteredUser(bannedUser);
-            if(bannedUser.getOnline())
-            {
-                org.springframework.security.core.userdetails.User bannedUserWithSession=findUserByUsername(bannedUser.getUsername());
-                if(bannedUserWithSession!=null)
-                {
-                    for(SessionInformation session:(sessionRegistry.getAllSessions(bannedUserWithSession, true))){
-                        session.expireNow();
-                    }
-                }
-            }
-            
+                eventPublisher.publishEvent(new BanUserEvent(bannedUser.getUsername(),bannedUser.getOnline()));
+            List<User> usersList=getUserList(authentication.getName());
+	    model.addAttribute("usersList",usersList);
             model.addAttribute("message", "User with name "+bannedUser.getUsername()+" is banned");
-            List<User> usersList=getUserList();
-		model.addAttribute("usersList",usersList);
-            return "console";
             
-        }
-        
-        public org.springframework.security.core.userdetails.User findUserByUsername(String userName)
-        {
-            List<Object> onlineUserList=sessionRegistry.getAllPrincipals();
-            for(Object onlineUser:onlineUserList)
-            {
-                org.springframework.security.core.userdetails.User convertedonlineUser=(org.springframework.security.core.userdetails.User)onlineUser;
-                if(((convertedonlineUser).getUsername()).equalsIgnoreCase(userName))
-                {
-                   return convertedonlineUser; 
-                }
-                
+            return "console";
             }
-            return null;
         }
         
-        public List<User> getUserList(){
+        @RequestMapping(value = "/admin/console/unban/{userId}", method = RequestMethod.GET)
+        public String unbanUser(@PathVariable(value="userId") Long id,Model model,WebRequest request, Authentication authentication)
+        {
+            User unbannedUser=userService.findById(id);
+            unbannedUser.setBanned(false);
+            userService.saveRegisteredUser(unbannedUser);
+            List<User> usersList=getUserList(authentication.getName());
+	    model.addAttribute("usersList",usersList);
+            model.addAttribute("message", "User with name "+unbannedUser.getUsername()+" is unbanned");
+            return "console";
+        }
+        
+        @RequestMapping(value = "/admin/console/upgrade/{userId}", method = RequestMethod.GET)
+        public String upgradeUser(@PathVariable(value="userId") Long id,Model model,WebRequest request, Authentication authentication)
+        {
+            User unbannedUser=userService.findById(id);
+            userService.changeRoleOfUser(unbannedUser, "ROLE_ADMIN");
+            userService.saveRegisteredUser(unbannedUser);
+            List<User> usersList=getUserList(authentication.getName());
+	    model.addAttribute("usersList",usersList);
+            model.addAttribute("message", "User with name "+unbannedUser.getUsername()+" is unbanned");
+            return "console";
+        }
+        
+        public List<User> getUserList(String userName){
             List<User> usersList=userService.findAll();
+            
         List<Object> onlineUserList=sessionRegistry.getAllPrincipals();
         for(User user:usersList)
         {
+            if(user.getUsername().equalsIgnoreCase(userName))
+            {
+                usersList.remove(user);
+                break;
+            }
             for(Object onlineUser:onlineUserList)
             {
                 if(user.getUsername().equalsIgnoreCase(((org.springframework.security.core.userdetails.User)onlineUser).getUsername()))

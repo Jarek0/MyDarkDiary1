@@ -21,6 +21,10 @@ public interface UserService {
     
     public User deleteUser(Long id) throws UserNotFoundException;
     
+    public void changeRoleOfUser(User user,String role);
+    
+    public boolean IsAdmin(User user);
+    
     boolean emailExist(String email);
     
     List<User> findAll();

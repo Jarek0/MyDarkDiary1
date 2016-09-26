@@ -142,4 +142,17 @@ public class UserServiceImpl implements UserService{
         userRepository.delete(deletedUser);
         return deletedUser;
     }
+    
+    @Override
+    public void changeRoleOfUser(User user,String role) {
+        user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_ADMIN"))));
+    }
+    
+    @Override
+    public boolean IsAdmin(User user) {
+        if(roleRepository.findByName("ROLE_ADMIN").getUsers().contains(user))
+        return true;
+        
+        return false;
+    }
 }

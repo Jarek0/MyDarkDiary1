@@ -2,12 +2,18 @@
 package myDarkDiary.service.model;
 
 
+import java.util.Locale;
 import javax.persistence.*;
 import java.util.Set;
+import myDarkDiary.service.events.BanUserEvent;
+import myDarkDiary.service.events.OnRegistrationCompleteEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
 @Entity
 @Table(name = "user")
 public class User{
+    
    private Long id;
     private String username;
     private String password;
@@ -72,10 +78,12 @@ public class User{
     public boolean getBanned() {
         return banned;
     }
-
+    
     public void setBanned(boolean banned) {
+        
         this.banned = banned;
     }
+
 
     @Transient
     public String getPasswordConfirm() {

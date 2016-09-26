@@ -102,14 +102,25 @@
                                  </c:if>
                              </td>
                              <td class="options">
+                                 <form>
+                                 <c:forEach var="role" items="${user.roles}">
+                                 <c:if test = "${role.name == 'ROLE_USER'}">
                                  <input onclick="window.location='${contextPath}/admin/console/delete/${user.id}'" name="Delete" type="submit" value="Delete" class="button1"/>
+                                 
                                  <c:if test="${!user.banned}">
                                  <input onclick="window.location='${contextPath}/admin/console/ban/${user.id}'" name="Ban" type="submit" value="Ban" class="button1"/>
+                                 
                                  </c:if>
                                  <c:if test="${user.banned}">
                                  <input onclick="window.location='${contextPath}/admin/console/unban/${user.id}'" name="Ban" type="submit" value="Unban" class="button1"/>
                                  </c:if>
                                  <input onclick="window.location='${contextPath}/admin/console/upgrade/${user.id}'" name="Upgrade" type="submit" value="Upgrade" class="button1"/>
+                                 
+                                 </c:if>
+                                 </c:forEach>
+                                 <input type="hidden" name="${_csrf.parameterName}"
+	                         value="${_csrf.token}" />
+                                 </form>
                              </td>
                              </tr> 
                            

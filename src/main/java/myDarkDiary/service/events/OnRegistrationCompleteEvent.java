@@ -5,7 +5,6 @@
  */
 package myDarkDiary.service.events;
 
-import myDarkDiary.service.events.*;
 import java.util.Locale;
 import myDarkDiary.service.model.User;
 import org.springframework.context.ApplicationEvent;

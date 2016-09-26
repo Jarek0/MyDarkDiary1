@@ -43,7 +43,8 @@
                 authentication-failure-handler-ref="myAuthenticationFailureHandler"/>
 
             <session-management>
-        <concurrency-control max-sessions="1" session-registry-alias="sessionRegistry"/>
+        <concurrency-control max-sessions="1" session-registry-alias="sessionRegistry" expired-url="/login"/>
+        
     </session-management>
                 
 		<logout logout-url="/j_spring_security_logout" delete-cookies="JSESSIONID" success-handler-ref="logoutSuccessHandler" />
