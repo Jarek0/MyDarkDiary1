@@ -7,6 +7,8 @@ import myDarkDiary.service.model.User;
 import myDarkDiary.service.model.VerificationToken;
 
 public interface UserService {
+    void deleteFromFriends(User user1,User user2);
+    
     void saveRegisteredUser(User user);
     
     User registerNewUserAccount(User accountDto)  throws EmailExistsException;

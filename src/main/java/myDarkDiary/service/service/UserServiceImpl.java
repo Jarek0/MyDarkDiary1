@@ -19,7 +19,7 @@ package myDarkDiary.service.service;
  *
  * @author Dell
  */
-import java.util.UUID;
+import java.io.IOException;
 import java.util.Arrays;
 import myDarkDiary.service.repository.RoleRepository;
 import myDarkDiary.service.repository.UserRepository;
@@ -29,11 +29,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import myDarkDiary.service.exceptions.EmailExistsException;
 import myDarkDiary.service.exceptions.UserNotFoundException;
+import myDarkDiary.service.model.Image;
 import myDarkDiary.service.model.VerificationToken;
+import myDarkDiary.service.repository.ImageRepository;
 import myDarkDiary.service.repository.VerificationTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +48,8 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private ImageRepository imageRepository;
     @Autowired
     private VerificationTokenRepository tokenRepository;
     @Autowired
@@ -94,9 +100,21 @@ public class UserServiceImpl implements UserService{
         }
         accountDto.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
         accountDto.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
+        accountDto.setUsers(new HashSet<>());
+        Image avatar;
+        try {
+            avatar=new Image(accountDto,"defaultAvatar","/images/default.png");
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            avatar=new Image();
+        }
+        
         accountDto.setEnabled(false);
         accountDto.setBanned(false);
-        return userRepository.save(accountDto);
+        accountDto.setDiscription("New user of \"My dark diary\"");
+        User savedUser=userRepository.save(accountDto);
+        imageRepository.save(avatar);
+        return savedUser;
     }
     
     @Override
@@ -150,9 +168,34 @@ public class UserServiceImpl implements UserService{
     
     @Override
     public boolean IsAdmin(User user) {
-        if(roleRepository.findByName("ROLE_ADMIN").getUsers().contains(user))
-        return true;
+        
+        for(User searchedUser:roleRepository.findByName("ROLE_ADMIN").getUsers())
+        {
+            if(searchedUser.getId()==user.getId())
+            {
+                return true;
+            }
+        }
         
         return false;
     }
+
+    @Override
+    public void deleteFromFriends(User user1,User user2) {
+        Iterator<User> iterator = user1.getUsers().iterator();
+        while (iterator.hasNext()) {
+        User element = iterator.next();
+        if (Objects.equals(element.getId(), user2.getId())) {
+        iterator.remove();
+        }
+        }
+        iterator = user2.getUsers().iterator();
+        while (iterator.hasNext()) {
+        User element = iterator.next();
+        if (Objects.equals(element.getId(), user1.getId())) {
+        iterator.remove();
+        }
+        }
+    }
+
 }

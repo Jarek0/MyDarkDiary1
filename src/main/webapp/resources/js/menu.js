@@ -14,7 +14,6 @@ $('.menu-trigger').click(function(){
 $('nav').slideToggle();
 
 });
-
 });
 
 

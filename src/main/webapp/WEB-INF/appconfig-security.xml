@@ -43,7 +43,7 @@
                 authentication-failure-handler-ref="myAuthenticationFailureHandler"/>
 
             <session-management>
-        <concurrency-control max-sessions="1" session-registry-alias="sessionRegistry" expired-url="/login"/>
+        <concurrency-control max-sessions="1" session-registry-alias="sessionRegistry" expired-url="/youarebanned"/>
         
     </session-management>
                 

@@ -29,6 +29,30 @@ and open the template in the editor.
     padding-top:0.5%;
     padding-right: 0.5%;
     }
+ h3 .label_item img{
+        opacity: 0.5;
+    width:1.5%;
+    padding-top:0.5%;
+    padding-right: 0.5%;
+    }
+    
+   h3 .button1{
+        background-color:black;
+    color:white;
+    font-family:font2;
+    font-size:50%;
+    border:none;
+    border-bottom-style:double;
+    border-bottom-width:1px;
+    border-top-style:double;
+    border-top-width:1px;
+    margin-right:1%;
+    margin-top:1%;
+    width: 10%;
+    }
+    h3 label{
+       font-size:80%; 
+    }
 
 label {
 cursor: pointer;   
@@ -51,6 +75,9 @@ cursor: pointer;
     margin-right:2%;
     margin-top:2%;
 }
+#charNum{
+    display:inline-block;
+}
 input[type="button"]
 {
     
@@ -71,6 +98,135 @@ input[type="button"]
 
 .czerwone{
     color:red;
+}
+
+.image-upload > input
+{
+    display: none;
+}
+
+div.user{
+    width:45%;
+    margin:1%;
+    padding:1%;
+    border-color: grey;
+    border-width: 1px;
+    border-style: solid;
+    display:inline-block;
+    float:left;
+}
+div.user .avatar{
+    position:relative;
+    float:left;
+    margin-left: 0.5%;
+}
+div.user .displayProfile{
+    float:left;
+    position:relative;
+    margin-left: 2%;
+    margin-top:3%;
+}
+div.user .displayImage{
+    text-decoration: none;
+    
+}
+div.user .image-upload{
+    width:100px;
+    height:100px;
+    float:left;
+    position: relative;
+  display: inline-block;
+ border-style:double;
+ border-bottom-width:3px;
+ border-color:black;
+}
+div.user .imageShow{
+     
+}
+div.user .label_item img{
+    width:4%;
+    float:left;
+    position:relative;
+    margin-left: 1%;
+    margin-top:2%;
+}
+div.user .button1{
+    float:right;
+    position:relative;
+}
+div.user .userRole{
+    float:left;
+    margin-left:-17%;
+    color:gray;
+    margin-top:10%;
+    position:relative;
+}
+
+.cameraImage{
+    content: '';
+  display: none;
+  opacity:0.5;
+  width: 150px; /* image width */
+  height: 150px; /* image height */
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.writeImage{
+    content: '';
+  display: none;
+  opacity:0.5;
+  margin-right: 95%;
+  width: 3%; /* image width */
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#discriptionForm{
+   display: none; 
+}
+.image-upload{
+    width:150px;
+    
+    text-align: center; margin: 1em 0;
+    height:150px;
+    white-space: nowrap;
+    margin-right: 5%;
+    margin-left: 5%;
+    float:right;
+    position: relative;
+  display: inline-block;
+ border-style:double;
+ border-bottom-width:3px;
+ border-color:black;
+}
+.imageShow{
+     width:150px;
+    
+    text-align: center; margin: 1em 0;
+    height:150px;
+    white-space: nowrap;
+    margin-right: 5%;
+    margin-left: 5%;
+    float:right;
+    position: relative;
+  display: inline-block;
+ border-style:double;
+ border-bottom-width:3px;
+ border-color:black;
+}
+.bigbox fieldset{
+  padding-top: 3%;  
+}
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+.avatar{
+    margin-left: -2.5%;
+    vertical-align: middle;
+    
 }
 th{
     background-color:black;
@@ -106,7 +262,20 @@ th{
     padding-top:0.5%;
     padding-right: 0.5%;
     }
-@media (max-width: 800px) {
+@media (max-width: 1000px) {
+ .usersTable .label_item img{
+        opacity: 0.5;
+    width:10%;
+    padding-top:0.5%;
+    padding-right: 0.5%;
+    }
+.button1
+{
+    width:100%;
+    margin-right: -40%;
+}
+
+
 .usersTable table, thead, tbody, th, td, tr { 
 		display: block; 
 	}
@@ -117,9 +286,7 @@ th{
 		top: -9999px;
 		left: -9999px;
 	}
-	.usersTable tbody, th,td{
-    width:100%;
-}
+	
 	.usersTable tr { border: 1px solid #ccc; }
 	
 	.usersTable td { 
@@ -128,6 +295,8 @@ th{
 		border-bottom: 1px solid #eee; 
 		position: relative;
 		padding-left: 50%; 
+                font-size: 80%;
+                width:50%;
 	}
 	
 	.usersTable td:before { 
@@ -136,19 +305,20 @@ th{
 		/* Top/left values mimic padding */
 		top: 6px;
 		left: 6px;
-		width: 45%; 
+		width: 50%; 
 		padding-right: 10px; 
 		white-space: nowrap;
 	}
 	
-	
-	
-        
+	/*
+	Label the data
+	*/
 	.usersTable td:nth-of-type(1):before { content: "Username"; }
-	.usersTable td:nth-of-type(2):before { content: "E-mail"; }
+	.usersTable td:nth-of-type(2):before { content: "E-Mail"; }
 	.usersTable td:nth-of-type(3):before { content: "Role"; }
 	.usersTable td:nth-of-type(4):before { content: "Verificated"; }
 	.usersTable td:nth-of-type(5):before { content: "Online"; }
 	.usersTable td:nth-of-type(6):before { content: "Options"; }
+	
 
         }

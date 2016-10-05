@@ -6,12 +6,9 @@
 package myDarkDiary.service.model;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "vtoken")

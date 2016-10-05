@@ -5,7 +5,9 @@
  */
 package myDarkDiary.service.listeners;
 
+import myDarkDiary.service.model.User;
 import myDarkDiary.service.service.LoginAttemptService;
+import myDarkDiary.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -22,6 +24,8 @@ public class AuthenticationSuccessEventListener
  
     @Autowired
     private LoginAttemptService loginAttemptService;
+    @Autowired
+    private UserService userService;
  
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent e) {
@@ -29,5 +33,8 @@ public class AuthenticationSuccessEventListener
           e.getAuthentication().getDetails();
          
         loginAttemptService.loginSucceeded(auth.getRemoteAddress());
+        User loginUser=userService.findByUsername(e.getAuthentication().getName());
+        loginUser.setOnline(true);
+        userService.saveRegisteredUser(loginUser);
     }
 }

@@ -22,19 +22,18 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    
+
 	<listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
     <listener>
-    <listener-class>
-        org.springframework.web.context.request.RequestContextListener
-    </listener-class>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 </listener>
 <listener>
-    <listener-class>
-      org.springframework.security.web.session.HttpSessionEventPublisher
-    </listener-class>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
   </listener>
+  
 
 
 	<context-param>
@@ -52,6 +51,8 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
         
-        
+        <session-config>
+      <session-timeout>10</session-timeout>
+    </session-config>
 
 </web-app>

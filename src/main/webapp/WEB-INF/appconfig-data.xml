@@ -42,8 +42,25 @@
           class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
+    
+    <bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- max upload size in bytes -->
+        <property name="maxUploadSize" value="20971520" /> <!-- 20MB -->
+         
+        <!-- max size of file in memory (in bytes) -->
+        <property name="maxInMemorySize" value="1048576" /> <!-- 1MB -->
+ 
+    </bean>
 	
         <tx:annotation-driven/>
+        <!--
+        <bean id="sessionKiller" class="myDarkDiary.service.SessionKiller" />
+        
+        
+        <task:scheduled-tasks>
+<task:scheduled ref="sessionKiller" method="run" fixed-delay="30000" />
+  </task:scheduled-tasks>-->
         
 	<jpa:repositories base-package="myDarkDiary.service.repository"/>
 </beans>

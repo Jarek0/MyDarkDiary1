@@ -2,13 +2,10 @@
 package myDarkDiary.service.model;
 
 
-import java.util.Locale;
+import java.util.Iterator;
+import java.util.Objects;
 import javax.persistence.*;
 import java.util.Set;
-import myDarkDiary.service.events.BanUserEvent;
-import myDarkDiary.service.events.OnRegistrationCompleteEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 
 @Entity
 @Table(name = "user")
@@ -24,6 +21,10 @@ public class User{
     private String passwordConfirm;
     private VerificationToken token;
     private Set<Role> roles;
+    private Set<User> users;
+    //user profile information
+    private Image avatar;
+    private String discription;
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -105,7 +106,27 @@ public class User{
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_user", joinColumns = @JoinColumn(name = "user_id1"), inverseJoinColumns = @JoinColumn(name = "user_id2"))
+    public Set<User> getUsers() {
+        return users;
+    }
+    
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
    
+    public boolean isFriend(Long userId){
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()) {
+        User element = iterator.next();
+        if (Objects.equals(element.getId(), userId)) {
+        return true;
+        }
+        }
+        return false;
+    }
     @OneToOne(mappedBy = "user")
     public VerificationToken getToken() {
         return token;
@@ -113,6 +134,23 @@ public class User{
 
     public void setToken(VerificationToken token) {
         this.token = token;
+    }
+    
+    @OneToOne(mappedBy = "userId")
+    public Image getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Image avatar) {
+        this.avatar = avatar;
+    }
+    
+    public String getDiscription() {
+        return discription;
+    }
+
+    public void setDiscription(String discription) {
+        this.discription = discription;
     }
 
 }

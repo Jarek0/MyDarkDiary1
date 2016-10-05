@@ -1,6 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
@@ -15,6 +16,7 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/menu.js" />"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/buttons.js" />"></script>
 
 <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -29,33 +31,85 @@
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
-              <li><a href="${contextPath}/admin" >Your account</a></li>
+              <li><a href="#">Home</a></li>
               <li class="has-sub">
-                <a href="#">menu</a>
+                <a href="#">My profile</a>
                 <ul>
-                   <li><a href="#">menu</a></li>
-                   <li><a href="#">menu</a></li>
-                   <li><a href="#">menu</a></li>
-                   <li><a href="#">menu</a></li>
+                   <li><a href="${contextPath}/profile">Profile</a></li>
+                   <a href="${contextPath}/profile/friends">FRIENDS</a>
+                   <li><a href="#">Blog</a></li>
+                   <li><a href="#">Pictures</a></li>
+                   <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              
-              <li><a href="${contextPath}/admin/console" class="position">Admin Console</a></li>
+              <li class="has-sub">
+                <a href="#">My messages</a>
+                <ul>
+                   <li><a href="#">All</a></li>
+                   <li><a href="#">Sended</a></li>
+                   <li><a href="#">Received</a></li>
+                </ul>
+              </li>
+              <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console" class="position">Admin Console</a></sec:authorize>
+            <sec:authorize access="hasRole('ROLE_USER')"><a href="" class="position">User Console</a></sec:authorize></li>
+              <li><a href="${contextPath}/search" >Members</a></li>
+               <li><a onclick="javascript:formSubmit()">Logout</a></li>
+               <c:url value="/j_spring_security_logout" var="logoutUrl" />
+	            <form action="${logoutUrl}" method="post" id="logoutForm">
+		    <input type="hidden" name="${_csrf.parameterName}"
+			value="${_csrf.token}" />
+	            </form>
+	            <script>
+		    function formSubmit() {
+			document.getElementById("logoutForm").submit();
+		    }
+	            </script>
             </ul>
           </nav>
+    
         
         <div id="contents">
-            <h2 class="title">
-                ADMIN CONSOLE
-            </h2>
+            <div class="title position">
+                <a href="${contextPath}/admin/console">ADMIN CONSOLE</a>
+            </div>
             <div class="bigbox">
                 <h3>
-                    Users list panel
+                    <form:form method='POST' action="${contextPath}/admin/console/search?${_csrf.parameterName}=${_csrf.token}">
+                    <input id="text" type="text" name="text" placeholder="Search users"/> 
+                    <select name="searchBy" required>
+                    <option value="" disabled selected hidden>search by</option>
+		    <option value="username">username</option>
+		    <option value="e-mail">e-mail</option>
+	            </select>
+                    <select name="online" required>
+                    <option value="" disabled selected hidden>online</option>
+                    <option value="${0}">yes</option>
+		    <option value="${1}">no</option>
+                    <option value="${2}">nvm</option>
+	            </select>
+                    <select name="verificated" required>
+                    <option value="" disabled selected hidden>verificated</option>
+                    <option value="${0}">yes</option>
+		    <option value="${1}">no</option>
+                    <option value="${2}">nvm</option>
+	            </select>
+                    <select name="banned" required>
+                    <option value="" disabled selected hidden>banned</option>
+                    <option value="${0}">yes</option>
+		    <option value="${1}">no</option>
+                    <option value="${2}">nvm</option>
+	            </select>
+                    <select name="role" required>
+                    <option value="" disabled selected hidden>role</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+		    <option value="ROLE_USER">User</option>
+                    <option value="nvm">nvm</option>
+	            </select>
+                    <input width="15" height="15" type="image" src="<c:url value="/resources/images/search.jpg" />" onclick="this.form.submit()">
+                    </form:form>
                 </h3>
                 <fieldset>
-                    <c:if test="${not empty message}">
-			<div class="msg">${message}</div>
-		    </c:if>
+                    <div class="msg" id="result"></div>
                     <table class="usersTable">
                         <thead>
                         <tr>
@@ -71,10 +125,10 @@
                         <c:if test="${not empty usersList}">
                        <c:forEach var="user" items="${usersList}">
                            
-                             <tr>
-                             <td>${user.username}</td>
+                             <tr id="Row${user.id}">
+                                 <td><a href="${contextPath}/profile/${user.id}" class="displayProfile">${user.username}</a></td>
                              <td>${user.email}</td>
-                             <td>
+                             <td id="Role${user.id}">
                                  <c:forEach var="role" items="${user.roles}">
                                  
                                  <c:if test = "${role.name == 'ROLE_ADMIN'}">
@@ -87,40 +141,33 @@
                              </td>
                              <td>
                                  <c:if test="${user.enabled}">
-                                 <input type="checkbox" name="remember-me" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
+                                 <input type="checkbox" name="enabled" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
                                  <c:if test="${!user.enabled}">
-                                 <input type="checkbox" name="remember-me" class="accept" id="accept" disabled="disabled"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
+                                 <input type="checkbox" name="enabled" class="accept" id="accept" disabled="disabled"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
                              </td>
                              <td>
                                  <c:if test="${user.online}">
-                                 <input type="checkbox" name="remember-me" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
+                                 <input type="checkbox" name="online" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
                                  <c:if test="${!user.online}">
-                                 <input type="checkbox" name="remember-me" class="accept" id="accept" disabled="disabled"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
+                                 <input type="checkbox" name="online" class="accept" id="accept" disabled="disabled"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
                              </td>
                              <td class="options">
-                                 <form>
-                                 <c:forEach var="role" items="${user.roles}">
-                                 <c:if test = "${role.name == 'ROLE_USER'}">
-                                 <input onclick="window.location='${contextPath}/admin/console/delete/${user.id}'" name="Delete" type="submit" value="Delete" class="button1"/>
+                                 
+                                 <input onclick="deleteUser('${contextPath}','${user.id}');" id="Delete${user.id}" name="Delete" type="submit" value="Delete" class="button1"/>
                                  
                                  <c:if test="${!user.banned}">
-                                 <input onclick="window.location='${contextPath}/admin/console/ban/${user.id}'" name="Ban" type="submit" value="Ban" class="button1"/>
+                                 <input onclick="banUser('${contextPath}','${user.id}');" id="Ban${user.id}" name="Ban" type="submit" value="Ban" class="button1"/>
                                  
                                  </c:if>
                                  <c:if test="${user.banned}">
-                                 <input onclick="window.location='${contextPath}/admin/console/unban/${user.id}'" name="Ban" type="submit" value="Unban" class="button1"/>
+                                 <input onclick="unbanUser('${contextPath}','${user.id}');" id="Unban${user.id}" name="Unban" type="submit" value="Unban" class="button1"/>
                                  </c:if>
-                                 <input onclick="window.location='${contextPath}/admin/console/upgrade/${user.id}'" name="Upgrade" type="submit" value="Upgrade" class="button1"/>
+                                 <input onclick="upgradeUser('${contextPath}','${user.id}');" id="Upgrade${user.id}" name="Upgrade" type="submit" value="Upgrade" class="button1"/>
                                  
-                                 </c:if>
-                                 </c:forEach>
-                                 <input type="hidden" name="${_csrf.parameterName}"
-	                         value="${_csrf.token}" />
-                                 </form>
                              </td>
                              </tr> 
                            
