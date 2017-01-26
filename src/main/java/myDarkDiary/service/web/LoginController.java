@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
 import myDarkDiary.service.GenericResponse;
 import myDarkDiary.service.model.VerificationToken;
 import myDarkDiary.service.service.MailServiceImpl;
-import myDarkDiary.service.service.SecurityServiceImpl;
+import myDarkDiary.service.notUsed.SecurityServiceImpl;
 import myDarkDiary.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

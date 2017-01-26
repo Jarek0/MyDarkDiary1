@@ -27,7 +27,7 @@
 </head>
 <body>
     
-    <div id="conteiner">
+    <div id="myConteiner">
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
@@ -36,19 +36,14 @@
                 <a href="#">My profile</a>
                 <ul>
                    <li><a href="${contextPath}/profile">Profile</a></li>
-                   <a href="${contextPath}/profile/friends">FRIENDS</a>
+                   <a href="${contextPath}/profile/friends">Friends</a>
                    <li><a href="#">Blog</a></li>
                    <li><a href="#">Pictures</a></li>
                    <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              <li class="has-sub">
-                <a href="#">My messages</a>
-                <ul>
-                   <li><a href="#">All</a></li>
-                   <li><a href="#">Sended</a></li>
-                   <li><a href="#">Received</a></li>
-                </ul>
+              <li>
+                <a href="${contextPath}/message">My messages</a>
               </li>
               <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console" class="position">Admin Console</a></sec:authorize>
             <sec:authorize access="hasRole('ROLE_USER')"><a href="" class="position">User Console</a></sec:authorize></li>
@@ -126,7 +121,12 @@
                        <c:forEach var="user" items="${usersList}">
                            
                              <tr id="Row${user.id}">
-                                 <td><a href="${contextPath}/profile/${user.id}" class="displayProfile">${user.username}</a></td>
+                                 <c:if test="${!(authUser.id==user.id)}">
+                                 <td><a href="${contextPath}/profile/displayProfile/${user.id}" class="displayProfile">${user.username}</a></td>
+                                 </c:if>
+                                 <c:if test="${(authUser.id==user.id)}">
+                                 <td><a href="${contextPath}/profile" class="displayProfile">${user.username}</a></td>
+                                 </c:if>
                              <td>${user.email}</td>
                              <td id="Role${user.id}">
                                  <c:forEach var="role" items="${user.roles}">

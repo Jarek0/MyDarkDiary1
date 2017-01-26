@@ -27,7 +27,7 @@
     <meta name="author" content="">
 </head>
 <body>
-    <div id="conteiner">
+    <div id="myConteiner">
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
@@ -42,13 +42,8 @@
                    <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              <li class="has-sub">
-                <a href="#">My messages</a>
-                <ul>
-                   <li><a href="#">All</a></li>
-                   <li><a href="#">Sended</a></li>
-                   <li><a href="#">Received</a></li>
-                </ul>
+              <li>
+                <a href="${contextPath}/message">My messages</a>
               </li>
               
               <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console">Admin Console</a></sec:authorize>
@@ -101,9 +96,14 @@
                 <c:if test="${not empty usersList}">
                        <c:forEach var="user" items="${usersList}">
                            <div class="user">
-                               <div class="image-upload"><a href="${contextPath}/profile/${user.id}" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
-                               <a href="${contextPath}/profile/${user.id}" class="displayProfile">${user.username}</a>
-                               
+                               <c:if test="${!(authUser.id==user.id)}">
+                               <div class="image-upload"><a href="${contextPath}/profile/displayProfile/${user.id}" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
+                               <a href="${contextPath}/profile/displayProfile/${user.id}" class="displayProfile">${user.username}</a>
+                               </c:if>
+                               <c:if test="${(authUser.id==user.id)}">
+                               <div class="image-upload"><a href="${contextPath}/profile" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
+                               <a href="${contextPath}/profile" class="displayProfile">${user.username}</a>
+                               </c:if>
                                <c:if test="${user.online}">
                                  <input type="checkbox" name="online" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
@@ -126,7 +126,7 @@
                                  <c:if test="${authUser.isFriend(user.id)}">
                                  <input onclick="deleteFriend('${contextPath}','${user.id}');" id="deleteFriend${user.id}" name="deleteFriend" type="submit" value="Delete friend" class="button1"/>
                                  </c:if>
-                                 <input onclick="window.location='${contextPath}/writeMessage/${user.id}'" name="writeMessage" type="submit" value="Write message" class="button1"/>
+                                 <input onclick="window.location='${contextPath}/message/startConversation/${user.id}'" name="writeMessage" type="submit" value="Write message" class="button1"/>
                                  </c:if>
                                  </div>
                        </c:forEach>

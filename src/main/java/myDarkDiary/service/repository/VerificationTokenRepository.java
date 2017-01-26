@@ -8,11 +8,13 @@ package myDarkDiary.service.repository;
 import myDarkDiary.service.model.User;
 import myDarkDiary.service.model.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Dell
  */
+@Repository
 public interface VerificationTokenRepository 
   extends JpaRepository<VerificationToken, Long> {
  

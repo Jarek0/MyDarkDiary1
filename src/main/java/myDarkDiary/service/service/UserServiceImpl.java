@@ -36,6 +36,7 @@ import java.util.UUID;
 import myDarkDiary.service.exceptions.EmailExistsException;
 import myDarkDiary.service.exceptions.UserNotFoundException;
 import myDarkDiary.service.model.Image;
+import myDarkDiary.service.model.Role;
 import myDarkDiary.service.model.VerificationToken;
 import myDarkDiary.service.repository.ImageRepository;
 import myDarkDiary.service.repository.VerificationTokenRepository;
@@ -55,14 +56,16 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    
+    @Transactional
     @Override
     public void saveRegisteredUser(User user) {
         
         userRepository.save(user);
     }
-
-    
+    @Override
+    public Role findRoleByName(String roleName){
+        return roleRepository.findByName(roleName);
+    }
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -74,8 +77,13 @@ public class UserServiceImpl implements UserService{
     }
     
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long id){
+        User user=userRepository.findById(id);
+        if(user==null){
+            throw new UserNotFoundException("this user does not exist");
+        }
+        return user;
+        
     }
     
    
@@ -162,6 +170,17 @@ public class UserServiceImpl implements UserService{
     }
     
     @Override
+    public User deleteUser(String userName) {
+        User deletedUser = userRepository.findByUsername(userName);
+         
+        if (deletedUser == null)
+            throw new UserNotFoundException("this user does not exist");
+         
+        userRepository.delete(deletedUser);
+        return deletedUser;
+    }
+    
+    @Override
     public void changeRoleOfUser(User user,String role) {
         user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_ADMIN"))));
     }
@@ -197,5 +216,113 @@ public class UserServiceImpl implements UserService{
         }
         }
     }
+    
+    @Override
+    public List<User> getUserList(List<User> usersList,String text,String searchBy,int online,String role){
+            
+           
+        for(Iterator<User> iter = usersList.iterator(); iter.hasNext(); )
+        {
+            User user = iter.next();
+            
+            if(searchBy.equals("username") && !user.getUsername().contains(text))
+            {
+                
+                    iter.remove();
+                    continue;
+                
+            }
+            else if(searchBy.equals("e-mail") && !user.getEmail().contains(text))
+            {
+                    iter.remove();
+                    continue;
+               
+            }
+            if(online==0 && !user.getOnline())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(online==1 && user.getOnline())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(IsAdmin(user) && role.equals("ROLE_USER"))
+            {
+                iter.remove();
+                    continue;
+            }
+            if(!IsAdmin(user) && role.equals("ROLE_ADMIN"))
+            {
+                iter.remove();
+            }
+        }
+        return usersList;
+        }
+    
+    @Override
+     public List<User> getUserList(List<User> usersList,String text,String searchBy,int online,int enabled,int banned,String role){
+            
+           
+        for(Iterator<User> iter = usersList.iterator(); iter.hasNext(); )
+        {
+            User user = iter.next();
+            
+            if(searchBy.equals("username") && !user.getUsername().contains(text))
+            {
+                
+                    iter.remove();
+                    continue;
+                
+            }
+            else if(searchBy.equals("e-mail") && !user.getEmail().contains(text))
+            {
+                    iter.remove();
+                    continue;
+               
+            }
+            if(online==0 && !user.getOnline())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(online==1 && user.getOnline())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(enabled==0 && !user.getEnabled())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(enabled==1 && user.getEnabled())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(banned==0 && !user.getBanned())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(banned==1 && user.getBanned())
+            {
+                iter.remove();
+                    continue;
+            }
+            if(IsAdmin(user) && role.equals("ROLE_USER"))
+            {
+                iter.remove();
+                    continue;
+            }
+            if(!IsAdmin(user) && role.equals("ROLE_ADMIN"))
+            {
+                iter.remove();
+            }
+        }
+        return usersList;
+        }
 
 }

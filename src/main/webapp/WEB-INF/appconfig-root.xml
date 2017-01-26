@@ -2,9 +2,10 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns="http://www.springframework.org/schema/beans"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
     <import resource="appconfig-mvc.xml"/>
 
@@ -13,6 +14,7 @@
     <import resource="appconfig-security.xml"/>
 
     <!-- Scans within the base package of the application for @Component classes to configure as beans -->
+    
     
     <context:component-scan base-package="myDarkDiary.service.*"/>
 
@@ -36,6 +38,14 @@
 <bean id="mailService" class="myDarkDiary.service.service.MailServiceImpl">
 	<property name="mailSender" ref="mailSender" />
 </bean>
+
+
+<websocket:message-broker application-destination-prefix="/">
+            <websocket:stomp-endpoint path="/send" >
+                <websocket:sockjs/>
+            </websocket:stomp-endpoint>
+            <websocket:simple-broker prefix="/topic,/user"/>
+        </websocket:message-broker>
     
     
 </beans>

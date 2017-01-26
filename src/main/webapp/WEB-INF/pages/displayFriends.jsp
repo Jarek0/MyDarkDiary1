@@ -17,6 +17,7 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/menu.js" />"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/buttons.js" />"></script>
 
 <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,7 +27,7 @@
     <meta name="author" content="">
 </head>
 <body>
-    <div id="conteiner">
+    <div id="myConteiner">
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
@@ -41,13 +42,8 @@
                    <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              <li class="has-sub">
-                <a href="#">My messages</a>
-                <ul>
-                   <li><a href="#">All</a></li>
-                   <li><a href="#">Sended</a></li>
-                   <li><a href="#">Received</a></li>
-                </ul>
+              <li>
+                <a href="${contextPath}/message">My messages</a>
               </li>
               
               <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console">Admin Console</a></sec:authorize>
@@ -69,7 +65,7 @@
           </nav>
         <div id="contents">
             <div class="title">
-                <a href="${contextPath}/profile/${user.id}">PROFILE</a>
+                <a href="${contextPath}/profile">PROFILE</a>
             </div>
             <div class="title position">
                 <a href="${contextPath}/profile/friends">FRIENDS</a>
@@ -86,7 +82,7 @@
             
             <div class="bigbox">
                 <h3>
-                 <form:form method='POST' action="${contextPath}/search?${_csrf.parameterName}=${_csrf.token}">
+                 <form:form method='POST' action="${contextPath}/profile/search?${_csrf.parameterName}=${_csrf.token}">
                     <input id="text" type="text" name="text" placeholder="Search users"/> 
                     <select name="searchBy" required>
                     <option value="" disabled selected hidden>search by</option>
@@ -112,9 +108,14 @@
                 <c:if test="${not empty usersList}">
                        <c:forEach var="user" items="${usersList}">
                            <div class="user">
-                               <div class="image-upload"><a href="${contextPath}/profile/${user.id}" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
-                               <a href="${contextPath}/profile/${user.id}" class="displayProfile">${user.username}</a>
-                               
+                               <c:if test="${!(authUser.id==user.id)}">
+                               <div class="image-upload"><a href="${contextPath}/profile/displayProfile/${user.id}" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
+                               <a href="${contextPath}/profile/displayProfile/${user.id}" class="displayProfile">${user.username}</a>
+                               </c:if>
+                               <c:if test="${(authUser.id==user.id)}">
+                               <div class="image-upload"><a href="${contextPath}/profile" class="displayImage"><img src='${contextPath}/profile/imageDisplay/${100}/${100}/${user.id}' class="avatar"/></a></div>
+                               <a href="${contextPath}/profile" class="displayProfile">${user.username}</a>
+                               </c:if>
                                <c:if test="${user.online}">
                                  <input type="checkbox" name="online" class="accept" id="accept" disabled="disabled" checked="checked"/><label for="accept" class="label_item"><img src=<c:url value="/resources/images/pentagram_checked.png" />></label>
                                  </c:if>
@@ -130,9 +131,14 @@
                                  <div class="userRole">User</div>
                                  </c:if>
                                  </c:forEach>
-                                 <c:if test="${user.id!=userId}">
-                                 <input onclick="window.location='${contextPath}/addFriend/${user.id}/${displayFriends}'" name="addFriend" type="submit" value="Add friend" class="button1"/>
-                                 <input onclick="window.location='${contextPath}/writeMessage/${user.id}'" name="writeMessage" type="submit" value="Write message" class="button1"/>
+                                 <c:if test="${!(authUser.id==user.id)}">
+                                 <c:if test="${!authUser.isFriend(user.id)}">
+                                 <input onclick="addFriend('${contextPath}','${user.id}');" id="addFriend${user.id}" name="addFriend" type="submit" value="Add friend" class="button1"/>
+                                 </c:if>
+                                 <c:if test="${authUser.isFriend(user.id)}">
+                                 <input onclick="deleteFriend('${contextPath}','${user.id}');" id="deleteFriend${user.id}" name="deleteFriend" type="submit" value="Delete friend" class="button1"/>
+                                 </c:if>
+                                 <input onclick="message/startConversation/${user.id}" name="writeMessage" type="submit" value="Write message" class="button1"/>
                                  </c:if>
                                  </div>
                        </c:forEach>

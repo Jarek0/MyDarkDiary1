@@ -3,6 +3,7 @@ package myDarkDiary.service.model;
 
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
 import java.util.Set;
@@ -25,7 +26,41 @@ public class User{
     //user profile information
     private Image avatar;
     private String discription;
+    private Set<Message> sended;
+    private Set<Message> received;
+    private List<Conversation> conversations;
     
+    public User(){
+        
+    }
+    public User(String username,String password,String email,boolean enabled,boolean online, boolean banned,VerificationToken token,Set<Role> roles,Set<User> users,Image avatar,String discription,Set<Message> sended,Set<Message> received,List<Conversation> conversations){
+        this.username=username;
+        this.password=password;
+        this.email=email;
+        this.enabled=enabled;
+        this.online=online;
+        this.banned=banned;
+        this.passwordConfirm=passwordConfirm;
+        this.discription=discription;
+        this.token=token;
+        this.roles=roles;
+        this.users=users;
+        this.avatar=avatar;
+        this.sended=sended;
+        this.received=received;
+        this.conversations=conversations;
+    }
+    public User(String username,String password,String email,boolean enabled,boolean online, boolean banned,Set<Role> roles){
+        this.username=username;
+        this.password=password;
+        this.email=email;
+        this.enabled=enabled;
+        this.online=online;
+        this.banned=banned;
+        this.passwordConfirm=passwordConfirm;
+        this.roles=roles;
+        
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
@@ -153,4 +188,30 @@ public class User{
         this.discription = discription;
     }
 
+     @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    public Set<Message> getReceived() {
+        return received;
+    }
+
+    public void setReceived(Set<Message> received) {
+        this.received = received;
+    }
+    
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    public Set<Message> getSended() {
+        return sended;
+    }
+
+    public void setSended(Set<Message> sended) {
+        this.sended = sended;
+    }
+    
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "users")
+    public List<Conversation> getConversations() {
+        return conversations;
+    }
+
+    public void setConversations(List<Conversation> conversations) {
+        this.conversations = conversations;
+    }
 }

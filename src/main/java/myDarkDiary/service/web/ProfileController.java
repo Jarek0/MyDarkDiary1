@@ -46,26 +46,38 @@ public class ProfileController {
     @Autowired
     private ImageConverter imageConverter;
     
-       @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    public String welcome(@PathVariable(value="userId") Long id,Model model,Authentication auth) {
-        if(id==null)
-        {
+       @RequestMapping(method = RequestMethod.GET)
+    public String welcome(Model model,Authentication auth) {
+        
             User user=userService.findByUsername(auth.getName());
             model.addAttribute("user", user);
             return "profile";
-        }
-        else{
+       
+    }
+    @RequestMapping(value = "/displayProfile/{userId}", method = RequestMethod.GET)
+    public String welcome(@PathVariable(value="userId") Long id,Model model,Authentication auth) {
             User user=userService.findById(id);
             model.addAttribute("user", user);
-            model.addAttribute("authUser", userService.findByUsername(auth.getName()));
+            model.addAttribute("authUser", userService.findById(id));
             return "displayProfile";
-        }
         
     }
     @RequestMapping(value = "/friends", method = RequestMethod.GET)
     public String displayFriends(Model model,Authentication auth) {
-        model.addAttribute("usersList",new ArrayList<User>(userService.findByUsername(auth.getName()).getUsers()));
-        return "displayFriends";
+        
+            model.addAttribute("usersList",new ArrayList<User>(userService.findByUsername(auth.getName()).getUsers()));
+            model.addAttribute("authUser", userService.findByUsername(auth.getName()));
+            return "displayFriends";
+        
+    }
+    @RequestMapping(value = "/displayFriendsOfUser/{userId}", method = RequestMethod.GET)
+    public String displayFriends(@PathVariable(value="userId") Long id,Model model,Authentication auth) {
+        
+            model.addAttribute("usersList",new ArrayList<User>(userService.findById(id).getUsers()));
+            model.addAttribute("mainUser", userService.findById(id));
+            model.addAttribute("authUser", userService.findByUsername(auth.getName()));
+            return "displayFriendsOfUser";
+        
     }
     
     @RequestMapping(value = "/addFriend/{userId}", method = RequestMethod.GET)
@@ -91,14 +103,13 @@ public class ProfileController {
         return new ResponseEntity<>("User with name "+user2.getUsername()+" is deleted from friends", new HttpHeaders(), HttpStatus.ACCEPTED);
     }
     
-    @RequestMapping(method = RequestMethod.GET)
-    public String welcome(Model model,Authentication auth) {
-        
-            User user=userService.findByUsername(auth.getName());
-            model.addAttribute("user", user);
-            return "profile";
-        
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    public String search(@RequestParam("text") String text,@RequestParam("searchBy") String searchBy,@RequestParam("online") int online,@RequestParam("role") String role,Model model,Authentication auth) {
+        model.addAttribute("usersList",userService.getUserList(new ArrayList<User>(userService.findByUsername(auth.getName()).getUsers()),text,searchBy,online,role));
+        model.addAttribute("authUser", userService.findByUsername(auth.getName()));
+        return "displayFriends";
     }
+    
     
     @RequestMapping(value = "/changeDiscription", method = RequestMethod.POST)
     public String changeDiscription(@RequestParam("discription") String discription,Model model,Authentication auth) {

@@ -1,4 +1,4 @@
-package myDarkDiary.service.service;
+package myDarkDiary.service.notUsed;
 
 public interface SecurityService {
     String findLoggedInUsername();

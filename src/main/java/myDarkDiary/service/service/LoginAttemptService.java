@@ -7,6 +7,8 @@ package myDarkDiary.service.service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -17,6 +19,7 @@ import com.google.common.cache.LoadingCache;
  * @author Dell
  */
 @Service
+
 public class LoginAttemptService {
  
     private final int MAX_ATTEMPT = 5;

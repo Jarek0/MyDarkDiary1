@@ -3,6 +3,7 @@ package myDarkDiary.service.service;
 import java.util.List;
 import myDarkDiary.service.exceptions.EmailExistsException;
 import myDarkDiary.service.exceptions.UserNotFoundException;
+import myDarkDiary.service.model.Role;
 import myDarkDiary.service.model.User;
 import myDarkDiary.service.model.VerificationToken;
 
@@ -19,7 +20,11 @@ public interface UserService {
     
     User findByEmail(String email);
     
-    public User findById(Long id);
+    public Role findRoleByName(String roleName);
+    
+    public User deleteUser(String userName);
+    
+    public User findById(Long id) throws UserNotFoundException;
     
     public User deleteUser(Long id) throws UserNotFoundException;
     
@@ -36,4 +41,8 @@ public interface UserService {
     VerificationToken generateNewVerificationToken(String existingToken);
  
     VerificationToken getVerificationToken(String VerificationToken);
+    
+    public List<User> getUserList(List<User> usersList,String text,String searchBy,int online,int enabled,int banned,String role);
+    
+    public List<User> getUserList(List<User> usersList,String text,String searchBy,int online,String role);
 }

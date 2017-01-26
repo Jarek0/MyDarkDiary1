@@ -5,7 +5,6 @@
  */
 package myDarkDiary.service.web;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -44,10 +43,11 @@ public class AdminController {
       ApplicationEventPublisher eventPublisher;
     
        @RequestMapping(value = "/console", method = RequestMethod.GET)
-	public String adminConsole(Model model, Authentication authentication) {
+	public String adminConsole(Model model, Authentication auth) {
 //userService.findAll()
                 List<User> usersList=userService.findAll();
 		model.addAttribute("usersList",usersList);
+                model.addAttribute("authUser",userService.findByUsername(auth.getName()));
 		return "console";
 
 	}
@@ -131,7 +131,7 @@ public class AdminController {
         @RequestMapping(value="/console/search", method=RequestMethod.POST)
         public String search(@RequestParam("text") String text,@RequestParam("searchBy") String searchBy,@RequestParam("online") int online,@RequestParam("verificated") int enabled,@RequestParam("banned") int banned,@RequestParam("role") String role,Model model,Authentication auth){
             System.out.println(text+" "+searchBy+" "+online+" "+enabled+" "+banned+" "+role);
-            model.addAttribute("usersList",getUserList(userService.findAll(),text,searchBy,online,enabled,banned,role));
+            model.addAttribute("usersList",userService.getUserList(userService.findAll(),text,searchBy,online,enabled,banned,role));
             return "console";
         }
         
@@ -173,66 +173,4 @@ public class AdminController {
 		}
 	}
         
-        public List<User> getUserList(List<User> usersList,String text,String searchBy,int online,int enabled,int banned,String role){
-            
-           
-        for(Iterator<User> iter = usersList.iterator(); iter.hasNext(); )
-        {
-            User user = iter.next();
-            
-            if(searchBy.equals("username") && !user.getUsername().contains(text))
-            {
-                
-                    iter.remove();
-                    continue;
-                
-            }
-            else if(searchBy.equals("e-mail") && !user.getEmail().contains(text))
-            {
-                    iter.remove();
-                    continue;
-               
-            }
-            if(online==0 && !user.getOnline())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(online==1 && user.getOnline())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(enabled==0 && !user.getEnabled())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(enabled==1 && user.getEnabled())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(banned==0 && !user.getBanned())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(banned==1 && user.getBanned())
-            {
-                iter.remove();
-                    continue;
-            }
-            if(userService.IsAdmin(user) && role.equals("ROLE_USER"))
-            {
-                iter.remove();
-                    continue;
-            }
-            if(!userService.IsAdmin(user) && role.equals("ROLE_ADMIN"))
-            {
-                iter.remove();
-            }
-        }
-        return usersList;
-        }
 }

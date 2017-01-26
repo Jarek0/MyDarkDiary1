@@ -27,7 +27,7 @@
     <meta name="author" content="">
 </head>
 <body>
-    <div id="conteiner">
+    <div id="myConteiner">
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
@@ -35,20 +35,15 @@
               <li class="has-sub">
                 <a href="#" class="position">My profile</a>
                 <ul>
-                   <li><a href="${contextPath}/profile/${user.id}">Profile</a></li>
+                   <li><a href="${contextPath}/profile">Profile</a></li>
                    <li><a href="${contextPath}/profile/friends">Friends</a></li>
                    <li><a href="#">Blog</a></li>
                    <li><a href="#">Pictures</a></li>
                    <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              <li class="has-sub">
-                <a href="#">My messages</a>
-                <ul>
-                   <li><a href="#">All</a></li>
-                   <li><a href="#">Sended</a></li>
-                   <li><a href="#">Received</a></li>
-                </ul>
+              <li>
+                <a href="${contextPath}/message">My messages</a>
               </li>
               
               <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console">Admin Console</a></sec:authorize>
@@ -73,7 +68,7 @@
             
         <div id="contents">
             <div class="title position">
-                <a href="${contextPath}/profile/${user.id}">PROFILE</a>
+                <a href="${contextPath}/profile">PROFILE</a>
             </div>
             <div class="title">
                 <li><a href="${contextPath}/profile/friends">FRIENDS</a></li>

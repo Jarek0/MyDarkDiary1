@@ -27,7 +27,7 @@
     <meta name="author" content="">
 </head>
 <body>
-    <div id="conteiner">
+    <div id="myConteiner">
         <div class="menu-trigger">Menu</div>
         <nav>  
             <ul class="egmenu">
@@ -42,13 +42,8 @@
                    <li><a href="#">Videos</a></li>
                 </ul>
               </li>
-              <li class="has-sub">
-                <a href="#">My messages</a>
-                <ul>
-                   <li><a href="#">All</a></li>
-                   <li><a href="#">Sended</a></li>
-                   <li><a href="#">Received</a></li>
-                </ul>
+              <li>
+                <a href="${contextPath}/message">My messages</a>
               </li>
               
               <li><sec:authorize access="hasRole('ROLE_ADMIN')"><a href="${contextPath}/admin/console">Admin Console</a></sec:authorize>
@@ -73,10 +68,10 @@
             
         <div id="contents">
             <div class="title position">
-                <a href="${contextPath}/profile">PROFILE</a>
+                <a href="${contextPath}/profile/displayProfile/${user.id}">PROFILE</a>
             </div>
             <div class="title">
-                <a href="${contextPath}/profile/friends">FRIENDS</a>
+                <a href="${contextPath}/profile/displayFriendsOfUser/${user.id}">FRIENDS</a>
             </div>
             <div class="title">
                 <a href="#">BLOG</a>
@@ -101,7 +96,7 @@
                                  <c:if test="${authUser.isFriend(user.id)}">
                                  <input onclick="deleteFriend('${contextPath}','${user.id}');" id="deleteFriend${user.id}" name="deleteFriend" type="submit" value="Delete friend" class="button1"/>
                                  </c:if>
-                <input onclick="window.location='${contextPath}/writeMessage/${user.id}'" name="writeMessage" type="submit" value="Write message" class="button1"/>
+                <input onclick="window.location='${contextPath}/message/startConversation/${user.id}'" name="writeMessage" type="submit" value="Write message" class="button1"/>
                  </h3>
                 <fieldset>
                
